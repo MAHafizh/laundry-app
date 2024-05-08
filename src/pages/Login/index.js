@@ -7,8 +7,10 @@ import {
   TextInput,
   TouchableOpacity,
   Modal,
+  Alert,
 } from 'react-native';
 import React, {useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {SplashBackground, SplashLogo} from '../../assets';
 import {WARNA_UTAMA} from '../../utils/constant';
@@ -25,17 +27,30 @@ const Login = () => {
     navigation.dispatch(StackActions.replace('MainApp', {screen: 'Home'}));
   };
 
-  const handleLogin = () => {
-    const predefinedEmail = 'hafizh12jr@gmail.com';
-    const predefinedPassword = '123456';
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://192.168.0.170:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password}),
+      });
 
-    if (email === predefinedEmail && password === predefinedPassword) {
-      goToHome();
-    } else {
-      setModalVisible(true);
-      setErrorText('Email atau Password salah');
+      const data = await response.json();
+
+      if (response.ok) {
+        await AsyncStorage.setItem('accessToken', data.accessToken);
+        console.log('Login berhasil!');
+        goToHome();
+      } else {
+        setModalVisible(true);
+        setErrorText(data.msg);
+      }
+    } catch (error) {
+      console.error('Terjadi kesalahan:', error);
+      Alert.alert('Login Gagal', 'Terjadi kesalahan pada server');
     }
-    // goToHome();
   };
 
   return (
