@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   ImageBackground,
   StyleSheet,
@@ -34,13 +35,14 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({email, password}),
+        body: JSON.stringify({
+          email: email.toLocaleLowerCase(),
+          password: password,
+        }),
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        await AsyncStorage.setItem('accessToken', data.accessToken);
+        await AsyncStorage.setItem('refreshToken', data.refreshToken);
         console.log('Login berhasil!');
         goToHome();
       } else {
@@ -83,6 +85,18 @@ const Login = () => {
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
+        <View
+          style={{
+            marginTop: 162,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}>
+          <Text>Dont have an Account </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+            <Text style={{color: 'blue'}}>Click Here</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <Modal
         animationType="slide"

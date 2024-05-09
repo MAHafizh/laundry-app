@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   StyleSheet,
   Text,
@@ -6,13 +7,49 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {HeaderBackground, HeaderLogo} from '../../assets';
 import {ButtonIcon, Saldo, ActiveOrder} from '../../components';
 import {WARNA_ABU} from '../../utils/constant';
+import {jwtDecode} from 'jwt-decode';
 
 const Home = () => {
+  const [name, setName] = useState('');
+  const [token, setToken] = useState('');
+
+  useEffect(() => {
+    getNewToken();
+  });
+
+  const getNewToken = async () => {
+    try {
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const response = await fetch(
+        `http://192.168.0.170:5000/token?refreshToken=${refreshToken}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setToken(data.accessToken);
+        const decoded = jwtDecode(data.accessToken);
+        console.log(decoded);
+        setName(decoded.name);
+      } else {
+        Alert.alert(data.msg);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={styles.page}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -20,7 +57,7 @@ const Home = () => {
           <Image source={HeaderLogo} style={styles.logo} />
           <View style={styles.greeting}>
             <Text style={styles.welcome}>Selamat Datang, </Text>
-            <Text style={styles.uname}>Hafizh </Text>
+            <Text style={styles.uname}>{name} </Text>
           </View>
         </ImageBackground>
         <Saldo />
