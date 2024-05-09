@@ -2,6 +2,7 @@
 import {ImageBackground, StyleSheet, Text, View, Image} from 'react-native';
 import React, {useEffect} from 'react';
 import {SplashBackground, SplashLogo} from '../../assets';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Splash = ({navigation}) => {
   useEffect(() => {
@@ -9,6 +10,15 @@ const Splash = ({navigation}) => {
       navigation.replace('Login');
     }, 3000);
   }, [navigation]);
+
+  const handleGetToken = async () => {
+    const dataToken = await AsyncStorage.getItem('refreshToken');
+    if (!dataToken) {
+      navigation.replace('Login');
+    } else {
+      navigation.replace('MainApp', {screen: 'Home'});
+    }
+  };
 
   return (
     <ImageBackground source={SplashBackground} style={styles.background}>
