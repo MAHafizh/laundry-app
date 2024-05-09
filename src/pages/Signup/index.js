@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-unused-vars */
 import {
   ImageBackground,
@@ -10,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {SplashBackground, SplashLogo} from '../../assets';
 import {WARNA_UTAMA} from '../../utils/constant';
@@ -20,25 +22,41 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confpassword, setconfPassword] = useState('');
+  const [confPassword, setconfPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [errorText, setErrorText] = useState('');
 
-  const goToHome = () => {
-    navigation.dispatch(StackActions.replace('MainApp', {screen: 'Home'}));
+  const goToLogin = () => {
+    navigation.dispatch(StackActions.replace('Login'));
   };
 
-  const handleLogin = () => {
-    const predefinedEmail = 'hafizh12jr@gmail.com';
-    const predefinedPassword = '123456';
-
-    if (email === predefinedEmail && password === predefinedPassword) {
-      goToHome();
-    } else {
+  const handleSignup = async () => {
+    try {
+      const response = await fetch('http://192.168.0.170:5000/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email.toLocaleLowerCase(),
+          password: password,
+          confPassword: confPassword,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log(data.msg);
+        goToLogin();
+      } else {
+        setModalVisible(true);
+        setErrorText(data.msg);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+      setErrorText('Network error, please try again.');
       setModalVisible(true);
-      setErrorText('Email atau Password salah');
     }
-    // goToHome();
   };
 
   return (
@@ -84,14 +102,26 @@ const Signup = () => {
           <TextInput
             style={styles.input}
             onChangeText={setconfPassword}
-            value={confpassword}
+            value={confPassword}
             placeholder="Confirm Your Password"
             secureTextEntry={true}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <TouchableOpacity style={styles.button} onPress={handleSignup}>
           <Text style={styles.buttonText}>Log In</Text>
         </TouchableOpacity>
+        <View
+          style={{
+            marginTop: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+          }}>
+          <Text>Already have an Account </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={{color: 'blue'}}>Click Here</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <Modal
         animationType="slide"
