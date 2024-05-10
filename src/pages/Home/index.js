@@ -40,7 +40,6 @@ const Home = () => {
       if (response.ok) {
         setToken(data.accessToken);
         const decoded = jwtDecode(data.accessToken);
-        console.log(decoded);
         setName(decoded.name);
       } else {
         Alert.alert(data.msg);
