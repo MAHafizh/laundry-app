@@ -6,19 +6,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Splash = ({navigation}) => {
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Login');
-    }, 3000);
-  }, [navigation]);
+    const handleGetToken = async () => {
+      try {
+        const dataToken = await AsyncStorage.getItem('refreshToken');
+        if (dataToken) {
+          navigation.replace('MainApp', {screen: 'Home'});
+        } else {
+          setTimeout(() => {
+            navigation.replace('Login');
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('Failed to get token from AsyncStorage:', error);
+      }
+    };
 
-  const handleGetToken = async () => {
-    const dataToken = await AsyncStorage.getItem('refreshToken');
-    if (!dataToken) {
-      navigation.replace('Login');
-    } else {
-      navigation.replace('MainApp', {screen: 'Home'});
-    }
-  };
+    handleGetToken();
+  }, [navigation]);
 
   return (
     <ImageBackground source={SplashBackground} style={styles.background}>
