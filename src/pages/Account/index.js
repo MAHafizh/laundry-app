@@ -5,12 +5,30 @@ import React from 'react';
 import {IconBackButton, ProfileImageDummy} from '../../assets';
 import {WARNA_UTAMA, WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
 import {FeatureContainer} from '../../components';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Account = () => {
   const navigation = useNavigation();
 
-  const handleLogout = () => {
-    navigation.navigate('Login');
+  const handleLogout = async () => {
+    try {
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const response = await fetch(
+        `http://192.168.0.170:5000/logout?refreshToken=${refreshToken}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      if (response.ok) {
+        await AsyncStorage.removeItem('refreshToken');
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
