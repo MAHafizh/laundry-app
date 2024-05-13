@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Modal,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import React, {useState} from 'react';
 import {IconBackButton, IconMapPin} from '../../assets';
-import {WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
+import {WARNA_SEKUNDER, WARNA_ABU, WARNA_UTAMA} from '../../utils/constant';
 import {PickUp, ServiceType, OrderItems} from '../../components';
 import moment from 'moment';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -25,6 +26,8 @@ const Order = () => {
   const [valueJenis, setValueJenis] = useState(null);
   const [valueDurasi, setValueDurasi] = useState(null);
   const [dateGMT7, setDateGMT7] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [respText, setRespText] = useState('');
 
   const handleOrderItemsValueChange = (itemName, itemValue) => {
     setOrderItemsValues(prevState => ({
@@ -48,8 +51,8 @@ const Order = () => {
   };
 
   // console.log(orderItemsValues['T-Shirt']);
-  // console.log(serviceType);
-  // console.log(dateGMT7);
+  console.log(serviceType);
+  console.log(dateGMT7);
 
   const handleAddOrder = async () => {
     try {
@@ -73,6 +76,11 @@ const Order = () => {
           service_type: serviceType,
         }),
       });
+      const data = await response.json();
+      if (response.ok) {
+        setModalVisible(true);
+        setRespText(data.msg);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +114,30 @@ const Order = () => {
             onValueChange={(jenis, durasi) => handleServiceType(jenis, durasi)}
           />
           <OrderItems onItemValuesChange={handleOrderItemsValueChange} />
+          <TouchableOpacity style={styles.button} onPress={handleAddOrder}>
+            <Text style={styles.buttonText}>Order Now</Text>
+          </TouchableOpacity>
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(false);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>{respText}</Text>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalVisible(false);
+                }}>
+                <Text style={styles.modalButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </ScrollView>
   );
@@ -170,5 +201,54 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'TitilliumWeb-Light',
     fontSize: 14,
+  },
+  button: {
+    marginVertical: 30,
+    backgroundColor: WARNA_UTAMA,
+    padding: 10,
+    borderRadius: 15,
+    marginHorizontal: 45,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    fontFamily: 'TitilliumWeb-Bold',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: WARNA_UTAMA,
+    borderRadius: 15,
+    padding: 10,
+    elevation: 2,
+  },
+  modalButtonText: {
+    color: 'white',
+    fontFamily: 'TitilliumWeb-Bold',
+    textAlign: 'center',
   },
 });
