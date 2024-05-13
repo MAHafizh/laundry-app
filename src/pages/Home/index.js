@@ -15,7 +15,7 @@ import {HeaderBackground, HeaderLogo} from '../../assets';
 import {ButtonIcon, Saldo, ActiveOrder} from '../../components';
 import {WARNA_ABU} from '../../utils/constant';
 import {jwtDecode} from 'jwt-decode';
-import {ipaddress} from '../../../ipaddress';
+import {ipaddress} from '../../utils/ipaddress';
 
 const Home = () => {
   const [name, setName] = useState('');

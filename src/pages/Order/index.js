@@ -13,7 +13,9 @@ import {IconBackButton, IconMapPin} from '../../assets';
 import {WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
 import {PickUp, ServiceType, OrderItems} from '../../components';
 import moment from 'moment';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ipaddress} from '../../utils/ipaddress';
+import {jwtDecode} from 'jwt-decode';
 
 const Order = () => {
   const navigation = useNavigation();
@@ -48,6 +50,33 @@ const Order = () => {
   // console.log(orderItemsValues['T-Shirt']);
   // console.log(serviceType);
   // console.log(dateGMT7);
+
+  const handleAddOrder = async () => {
+    try {
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const decoded = jwtDecode(refreshToken);
+
+      const response = await fetch(`http://${ipaddress}:5000/user/order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: decoded.userId,
+          formal_shirt: orderItemsValues['Formal Shirt'],
+          shirt: orderItemsValues['T-Shirt'],
+          outer: orderItemsValues.Outer,
+          jeans: orderItemsValues.Jeans,
+          pants: orderItemsValues.Pants,
+          underwear: orderItemsValues.Underwear,
+          pickup_time: dateGMT7,
+          service_type: serviceType,
+        }),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

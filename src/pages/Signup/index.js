@@ -16,7 +16,7 @@ import {useNavigation, StackActions} from '@react-navigation/native';
 import {SplashBackground, SplashLogo} from '../../assets';
 import {WARNA_UTAMA} from '../../utils/constant';
 import {IconPassword, IconEmail, IconProfile2} from '../../assets';
-import {ipaddress} from '../../../ipaddress';
+import {ipaddress} from '../../utils/ipaddress';
 
 const Signup = () => {
   const navigation = useNavigation();

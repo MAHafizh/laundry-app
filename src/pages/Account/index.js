@@ -13,7 +13,7 @@ import {IconBackButton, ProfileImageDummy} from '../../assets';
 import {WARNA_UTAMA, WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
 import {FeatureContainer} from '../../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {ipaddress} from '../../../ipaddress';
+import {ipaddress} from '../../utils/ipaddress';
 import {jwtDecode} from 'jwt-decode';
 
 const Account = () => {
