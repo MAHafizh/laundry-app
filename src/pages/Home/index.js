@@ -15,6 +15,7 @@ import {HeaderBackground, HeaderLogo} from '../../assets';
 import {ButtonIcon, Saldo, ActiveOrder} from '../../components';
 import {WARNA_ABU} from '../../utils/constant';
 import {jwtDecode} from 'jwt-decode';
+import {ipaddress} from '../../../ipaddress';
 
 const Home = () => {
   const [name, setName] = useState('');
@@ -28,7 +29,7 @@ const Home = () => {
     try {
       const refreshToken = await AsyncStorage.getItem('refreshToken');
       const response = await fetch(
-        `http://192.168.0.170:5000/token?refreshToken=${refreshToken}`,
+        `http://${ipaddress}:5000/token?refreshToken=${refreshToken}`,
         {
           method: 'GET',
           headers: {

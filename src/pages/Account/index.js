@@ -1,20 +1,35 @@
 /* eslint-disable no-unused-vars */
-import {StyleSheet, Text, View, TouchableOpacity, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {IconBackButton, ProfileImageDummy} from '../../assets';
 import {WARNA_UTAMA, WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
 import {FeatureContainer} from '../../components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ipaddress} from '../../../ipaddress';
+import {jwtDecode} from 'jwt-decode';
 
 const Account = () => {
   const navigation = useNavigation();
+  const [name, setName] = useState();
+  const [token, setToken] = useState();
+
+  useEffect(() => {
+    getNewToken();
+  });
 
   const handleLogout = async () => {
     try {
       const refreshToken = await AsyncStorage.getItem('refreshToken');
       const response = await fetch(
-        `http://192.168.0.170:5000/logout?refreshToken=${refreshToken}`,
+        `http://${ipaddress}:5000/logout?refreshToken=${refreshToken}`,
         {
           method: 'DELETE',
           headers: {
@@ -25,6 +40,31 @@ const Account = () => {
       if (response.ok) {
         await AsyncStorage.removeItem('refreshToken');
         navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getNewToken = async () => {
+    try {
+      const refreshToken = await AsyncStorage.getItem('refreshToken');
+      const response = await fetch(
+        `http://${ipaddress}:5000/token?refreshToken=${refreshToken}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setToken(data.accessToken);
+        const decoded = jwtDecode(data.accessToken);
+        setName(decoded.name);
+      } else {
+        Alert.alert(data.msg);
       }
     } catch (error) {
       console.error(error);
@@ -44,7 +84,7 @@ const Account = () => {
       <View style={styles.contentContainer}>
         <View style={styles.profileContainer}>
           <Image source={ProfileImageDummy} style={styles.profileImage} />
-          <Text style={styles.fullname}>Muhammad Abdullah Hafizh</Text>
+          <Text style={styles.fullname}>{name}</Text>
         </View>
         <View>
           <FeatureContainer title="Profile" />

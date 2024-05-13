@@ -13,7 +13,7 @@ import {
 } from '../../assets';
 import {WARNA_SEKUNDER} from '../../utils/constant';
 
-const ItemsContainer = ({title}) => {
+const ItemsContainer = ({title, onValueChange}) => {
   const Icon = () => {
     if (title === 'Formal Shirt') {
       return <IconFormalShirt />;
@@ -36,34 +36,46 @@ const ItemsContainer = ({title}) => {
     return <IconFormalShirt />;
   };
 
-  const [values, setValues] = useState({
-    'Formal Shirt': 0,
-    'T-Shirt': 0,
-    Outer: 0,
-    Jeans: 0,
-    Pants: 0,
-    Underwear: 0,
-  });
+  const [value, setValue] = useState(0);
 
-  const handleAdd = (action, item) => {
-    const newValues = {...values};
-
+  const handleAdd = action => {
     if (action === 'plus') {
-      newValues[item] += 1;
-    } else if (action === 'minus' && newValues[item] > 0) {
-      newValues[item] -= 1;
+      setValue(prevValue => prevValue + 1);
+      onValueChange(title, value + 1); // Memperbarui state di komponen induk
+    } else if (action === 'minus' && value > 0) {
+      setValue(prevValue => prevValue - 1);
+      onValueChange(title, value - 1); // Memperbarui state di komponen induk
     }
-
-    setValues(newValues);
   };
-  console.log('===========');
-  console.log('Formal Shirt', values['Formal Shirt']);
-  console.log('T-Shirt', values['T-Shirt']);
-  console.log('Outer', values.Outer);
-  console.log('Pants', values.Pants);
-  console.log('Jeans', values.Jeans);
-  console.log('Underwear', values.Underwear);
-  console.log('===========');
+
+  // const handleAddOrder = async () => {
+  //   try {
+  //     const refreshToken = await AsyncStorage.getItem('refreshToken');
+  //     const decoded = jwtDecode(refreshToken);
+
+  //     const response = await fetch(`http://${ipaddress}:5000/user/order`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         user_id: decoded.userId,
+  //         formal_shirt: values['Formal Shirt'],
+  //         shirt: values['T-Shirt'],
+  //         outer: values.Outer,
+  //         jeans: values.Jeans,
+  //         pants: values.Pants,
+  //         underwear: values.Underwear,
+  //       }),
+  //     });
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       console.log(data.msg);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   return (
     <View style={styles.container}>
@@ -74,12 +86,12 @@ const ItemsContainer = ({title}) => {
       <View style={styles.actionContainer}>
         <TouchableOpacity
           onPress={() => handleAdd('minus', title)}
-          disabled={values[title] === 0}>
+          disabled={value[title] === 0}>
           <View style={styles.iconAction}>
             <IconMinus />
           </View>
         </TouchableOpacity>
-        <Text style={styles.textAction}>{values[title]}</Text>
+        <Text style={styles.textAction}>{value}</Text>
         <TouchableOpacity onPress={() => handleAdd('plus', title)}>
           <View style={styles.iconAction}>
             <IconPlus />

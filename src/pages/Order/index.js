@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   StyleSheet,
   Text,
@@ -7,13 +8,47 @@ import {
   ScrollView,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useState} from 'react';
 import {IconBackButton, IconMapPin} from '../../assets';
 import {WARNA_SEKUNDER, WARNA_ABU} from '../../utils/constant';
 import {PickUp, ServiceType, OrderItems} from '../../components';
+import moment from 'moment';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Order = () => {
   const navigation = useNavigation();
+  const [orderItemsValues, setOrderItemsValues] = useState({});
+  const [pickupDate, setPickupDate] = useState(new Date());
+  const [serviceType, setServiceType] = useState();
+  const [valueJenis, setValueJenis] = useState(null);
+  const [valueDurasi, setValueDurasi] = useState(null);
+  const [dateGMT7, setDateGMT7] = useState();
+
+  const handleOrderItemsValueChange = (itemName, itemValue) => {
+    setOrderItemsValues(prevState => ({
+      ...prevState,
+      [itemName]: itemValue,
+    }));
+    console.log(`Received Value for ${itemName}: ${itemValue}`);
+  };
+
+  const handlePickupDate = date => {
+    setPickupDate(date);
+    setDateGMT7(moment(date).format('DD-MM-YYYY HH:mm'));
+    console.log(dateGMT7);
+  };
+
+  const handleServiceType = (jenis, durasi) => {
+    setValueJenis(jenis);
+    setValueDurasi(durasi);
+    const mixValue = `${jenis} - ${durasi}`;
+    setServiceType(mixValue);
+  };
+
+  // console.log(orderItemsValues['T-Shirt']);
+  // console.log(serviceType);
+  // console.log(dateGMT7);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -35,9 +70,13 @@ const Order = () => {
               </Text>
             </TouchableOpacity>
           </View>
-          <PickUp />
-          <ServiceType />
-          <OrderItems />
+          <PickUp onDateChange={handlePickupDate} />
+          <ServiceType
+            valueJenis={valueJenis}
+            valueDurasi={valueDurasi}
+            onValueChange={(jenis, durasi) => handleServiceType(jenis, durasi)}
+          />
+          <OrderItems onItemValuesChange={handleOrderItemsValueChange} />
         </View>
       </View>
     </ScrollView>

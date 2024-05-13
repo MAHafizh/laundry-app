@@ -16,6 +16,7 @@ import {useNavigation, StackActions} from '@react-navigation/native';
 import {SplashBackground, SplashLogo} from '../../assets';
 import {WARNA_UTAMA} from '../../utils/constant';
 import {IconPassword, IconEmail, IconProfile2} from '../../assets';
+import {ipaddress} from '../../../ipaddress';
 
 const Signup = () => {
   const navigation = useNavigation();
@@ -32,7 +33,7 @@ const Signup = () => {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch('http://192.168.0.170:5000/signup', {
+      const response = await fetch(`http://${ipaddress}:5000/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

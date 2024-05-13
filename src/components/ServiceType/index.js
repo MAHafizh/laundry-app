@@ -3,22 +3,20 @@ import React, {useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 
 const dataType = [
-  {label: 'Cuci Setrika', value1: '1'},
-  {label: 'Cuci Kering', value1: '2'},
-  {label: 'Setrika Saja', value1: '3'},
+  {label: 'Cuci Setrika', valueJenis: 'Cuci Setrika'},
+  {label: 'Cuci Kering', valueJenis: 'Cuci Kering'},
+  {label: 'Setrika Saja', valueJenis: 'Setrika Saja'},
 ];
 
 const dataDuration = [
-  {label: '1 Day', value2: '1'},
-  {label: '2 Day', value2: '2'},
-  {label: '3 Day', value2: '3'},
+  {label: '1 Day', valueDurasi: '1 Day'},
+  {label: '2 Day', valueDurasi: '2 Day'},
+  {label: '3 Day', valueDurasi: '3 Day'},
 ];
-const ServiceType = () => {
-  const [value1, setValue1] = useState(null);
-  const [value2, setValue2] = useState(null);
 
-  // console.log('value1 1: ', value1);
-  // console.log('Value 2: ', value2);
+const ServiceType = ({valueJenis, valueDurasi, onValueChange}) => {
+  const [jenis, setJenis] = useState(valueJenis);
+  const [durasi, setDurasi] = useState(valueDurasi);
 
   return (
     <View style={styles.wrapper}>
@@ -32,11 +30,12 @@ const ServiceType = () => {
           data={dataType}
           maxHeight={300}
           labelField="label"
-          valueField="value1"
-          placeholder="Select item"
-          value={value1}
+          valueField="valueJenis"
+          placeholder="Select Item"
+          value={valueJenis}
           onChange={item => {
-            setValue1(item.value1);
+            setJenis(item.valueJenis);
+            onValueChange && onValueChange(item.valueJenis, durasi);
           }}
         />
         <Dropdown
@@ -47,11 +46,12 @@ const ServiceType = () => {
           data={dataDuration}
           maxHeight={300}
           labelField="label"
-          valueField="value2"
-          placeholder="Select item"
-          value={value2}
+          valueField="valueDurasi"
+          placeholder="Select Item"
+          value={valueDurasi}
           onChange={item => {
-            setValue2(item.value2);
+            setDurasi(item.valueDurasi);
+            onValueChange && onValueChange(jenis, item.valueDurasi);
           }}
         />
       </View>

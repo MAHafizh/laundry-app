@@ -4,7 +4,7 @@ import DatePicker from 'react-native-date-picker';
 import {IconKalender} from '../../assets';
 import moment from 'moment';
 
-const PickUp = () => {
+const PickUp = ({onDateChange}) => {
   const getDefaultPickupTime = () => {
     const now = new Date();
     const nextHour = new Date(now);
@@ -22,6 +22,7 @@ const PickUp = () => {
 
   const handleTanggal = date => {
     setTanggal(date);
+    onDateChange(date);
   };
 
   const toggleDatePicker = () => {

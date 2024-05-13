@@ -20,7 +20,6 @@ const Splash = ({navigation}) => {
         console.error('Failed to get token from AsyncStorage:', error);
       }
     };
-
     handleGetToken();
   }, [navigation]);
 
